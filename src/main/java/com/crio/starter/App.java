@@ -4,13 +4,26 @@
 
 package com.crio.starter;
 
+import javax.annotation.PreDestroy;
+import com.crio.starter.repository.MemeRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
 public class App {
 
+  @Autowired
+  MemeRepository memeRepository;
+
   public static void main(String[] args) {
+    
     SpringApplication.run(App.class, args);
+
   }
+   @PreDestroy
+    public void onExit() {
+        memeRepository.deleteAll();
+        System.out.println("Database cleared before shutdown.");
+    }
 }
