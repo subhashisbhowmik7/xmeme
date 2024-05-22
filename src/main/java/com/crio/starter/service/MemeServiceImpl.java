@@ -2,8 +2,10 @@ package com.crio.starter.service;
 
 import com.crio.starter.data.Meme;
 import com.crio.starter.data.MemeDateComparator;
+
 import com.crio.starter.exceptions.DuplicateMemeException;
 import com.crio.starter.exceptions.InvalidMemeException;
+
 import com.crio.starter.exceptions.MemeNotFoundException;
 import com.crio.starter.exchange.MemeRequestDto;
 import com.crio.starter.exchange.MemeResponseDto;
@@ -33,7 +35,7 @@ public class MemeServiceImpl implements MemeService {
 
         if(!isValidMeme(meme))  { 
         System.out.println("Inside isValid");
-        return  ResponseEntity.status(HttpStatus.CONFLICT).body(meme);       
+        return  ResponseEntity.status(HttpStatus.BAD_REQUEST).body(meme);       
     }
         
             Optional<Meme> existingMeme = memeRepository.findByNameAndUrlAndCaption(meme.getName(), meme.getUrl(), meme.getCaption());

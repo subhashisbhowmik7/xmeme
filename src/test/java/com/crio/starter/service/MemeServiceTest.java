@@ -13,7 +13,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -71,7 +70,11 @@ void testPostFirstMeme() {
 
     when(memeRepository.findByNameAndUrlAndCaption(anyString(), anyString(), anyString()))
         .thenReturn(Optional.empty());
-    when(memeRepository.save(any(Meme.class))).thenAnswer(invocation -> invocation.getArgument(0));
+    when(memeRepository.save(any(Meme.class))).thenAnswer(invocation -> {
+        Meme savedMeme = invocation.getArgument(0);
+        savedMeme.setId("1");     // Simulate MongoDB setting the ID since in mockito it wont be setting the id just like mongodb
+        return savedMeme;
+    });
 
     // Act
     ResponseEntity<Meme> response = memeService.saveMeme(meme);
@@ -139,10 +142,12 @@ void testPostEmptyMeme() {
     Meme meme = new Meme();
 
     // Act & Assert
-    assertThrows(InvalidMemeException.class, () -> memeService.saveMeme(meme));
+    ResponseEntity<Meme> response = memeService.saveMeme(meme);
+
+    // Assert
+    assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
     verify(memeRepository, never()).save(any(Meme.class));
 }
-
 
 @Test
 void testGetAllMemesWhenNotEmpty() {
